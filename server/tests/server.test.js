@@ -1,12 +1,13 @@
 const expect = require('expect');
 const request = require('supertest');
+const {ObjectId} = require('mongodb');
 
 const {app}= require('./../server');
 const {Todo}= require('./../models/todo');
 
 const todos=[
-  {text: 'First test todo'},
-  {text: 'Secons test todo'}
+  {_id: new ObjectId ,text: 'First test todo'},
+  {_id: new ObjectId ,text: 'Secons test todo'}
 ]
 beforeEach((done)=>{
   Todo.deleteMany({}).then(()=>{
@@ -64,4 +65,27 @@ describe("GET /todos", ()=>{
       })
       .end(done);
   })
+})
+describe(" GET /todos/:id", ()=>{
+  it('should get todo for valid id present in DB', (done)=>{
+    request(app)
+      .get(`/todos/${todos[1]._id}`)
+      .expect(200)
+      .expect((res)=>{
+        expect(res.body.text).toBe(todos[1].text);
+      })
+      .end(done);
+  });
+  it('should give 404 for valid id but not in DB', (done)=>{
+    request(app)
+      .get(`/todos/${new ObjectId}`)
+      .expect(404)
+      .end(done);
+  });
+  it('should get 404 for invalid id', (done)=>{
+    request(app)
+      .get('/todos/123')
+      .expect(404)
+      .end(done);
+  });
 })
