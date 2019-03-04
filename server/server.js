@@ -1,11 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const {ObjectId}= require('mongodb');
+
 var {mongoose} = require('./db/mongoose');
 var {Todo} =require('./models/todo');
 var {User} = require('./models/user');
 
+const port =(process.env.PORT || 3000 );
 var app = express();
 app.use(bodyParser.json());
 
@@ -43,8 +44,8 @@ app.get('/todos/:id', (req, res)=>{ /////////////-------------Find Specific todo
   })
 })
 
-app.listen(3000,()=>{
-  console.log('server is running at 3000');
+app.listen(port,()=>{
+  console.log(`server is running at ${port} `);
 });
 
 module.exports = {app};
